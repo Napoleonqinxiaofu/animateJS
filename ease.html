@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Ease 缓动学习——线性缓动</title>
+	<style>
+		*{
+			margin:0;
+			padding:0;
+			list-style-type: none;
+		}
+		html, body {
+			width:100%;
+			height: 100%;
+		}
+	</style>
+</head>
+<body>
+	<div style="position: absolute;left:0;top:0;border:1px solid gray;height:100px;display:inline-block;width:100px;opacity: 1;background: white;"></div>
+
+	<!-- 对于css属性动画来说，首先确定运行动画之前的属性值，再确定运行动画之后的属性值，然后确定运动时间周期。最后使用插值的方式来告诉浏览器每一帧渲染的时候执行什么函数即可。 -->
+
+
+	<br>
+
+	<button style="position:absolute;left:200px;">TOGGLE</button>
+
+	<!-- 这是个值得记住的日子，我忽然之间明白了动画的效果。 -->
+</body>
+<script src="interpolate.js"></script>
+<script src="animate.js"></script>
+<script>
+
+	window.onload = function() {
+        var oDiv = document.querySelector('div'),
+            oButton = document.querySelector('button');
+        var handle = animate(oDiv, {
+				"left" : "400px",
+				"top" : "400px",
+				"opacity" : 0.7,
+				"background-color" : "#ff33ff"
+			})
+            .ease('quad')
+            .duration(3000)
+			.delay(1000)
+            .start()
+            .complete(function() {
+                console.log(90);
+            });
+		console.log(handle);
+        var isPause = false;
+        oButton.onclick = function() {
+            if( !isPause ) {
+                // 动画正在进行，那就停止
+                handle.pause();
+            }else {
+                // 动画已经暂停，继续执行动画
+                handle.play();
+            }
+            isPause = !isPause;
+        }
+	}
+//	console.log(interpolate().domain([1, 45]).range([33, 65]).getValue(12))
+</script>
+</html>
