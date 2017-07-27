@@ -84,6 +84,7 @@
 						result = this._distance.map(function(item, index) {
 							return ease(t, self._start[index], self._distance[index], self._mode);
 						});
+						
 						result = RGBToString(result);
 						break;
 				}

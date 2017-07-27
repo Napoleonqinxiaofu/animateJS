@@ -126,8 +126,8 @@
 				return this;
 			}
 
-			// 缓存下this
-			var self = this;
+            // 缓存下this             
+            var self = this;
 			
 			// 执行delay毫秒之后再执行动画这个逻辑
 			if( this._delay > 0 ) {
@@ -164,10 +164,11 @@
          */
 		stop : function() {
 			this._startTime = null;
-			cancelAnimationFrame(this._timer);
 
 			// 设置中间状态为1的时候的状态，就是最终状态了。
 			this._setMiddleState(1);
+
+			cancelAnimationFrame(this._timer);
 
 			//执行callbacks的函数
 			var i = this._callbacks.length - 1;

@@ -24,8 +24,6 @@
 	<br>
 
 	<button style="position:absolute;left:200px;">TOGGLE</button>
-
-	<!-- 这是个值得记住的日子，我忽然之间明白了动画的效果。 -->
 </body>
 <script src="interpolate.js"></script>
 <script src="animate.js"></script>
@@ -40,14 +38,18 @@
 				"opacity" : 0.7,
 				"background-color" : "#ff33ff"
 			})
-            .ease('quad')
+            .ease('bounceOut')
             .duration(3000)
 			.delay(1000)
             .start()
             .complete(function() {
                 console.log(90);
             });
+
 		console.log(handle);
+
+		handle.stop();
+
         var isPause = false;
         oButton.onclick = function() {
             if( !isPause ) {
