@@ -37,10 +37,11 @@ var animateHandle = animate(
 		},
 
 		// duration 可选，默认为1000ms，也可以一会儿再调用duration函数进行设置
-
+		3000,
 		// easeMode 可选，默认为linear，缓动的方式，
 		//linear、quad、cubic、bounceOut……，
 		// 请查看interpolate.js里面的effects对象
+		"bounceOut"
 	);
 
 	// 执行动画
@@ -108,10 +109,20 @@ var animateHandle = animate(oDiv, props)
 ```
 
 中断动画，直接跳到最终的动画状态
+
 ```Javascript
 // 中断动画之后会直接跳转到动画的最终状态
-setTimeout(function() {
-	animateHandle.stop();
-}, 2000);
+animateHandle.stop();
+```
 
+暂停动画，不过这得等到delay的延迟时间过去了才能调用
+
+```Javascript
+animationHandle.pause();
+```
+
+继续动画，只有在暂停动画之后调用才有效。
+
+```Javascript
+animationHandle.play();
 ```

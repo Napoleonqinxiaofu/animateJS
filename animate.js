@@ -27,6 +27,12 @@
             this._callbacks = [];
 			// 需要动画的元素
 			this._element = null;
+
+			// 判断初始化的时候传递进来的element是不是DOM元素，
+			// 不是的话那就在每一帧执行的时候不要去执行设置DOM样式的函数
+			// 默认为true，表示用户传递的是DOM元素
+			this._isDOMElement = true;
+
 			// 延迟时间，默认为0
 			this._delay = 0;
 
@@ -43,6 +49,11 @@
 
             // 暂停时需要记录动画已经执行的时间长度
             this._elapsedTime = null;
+
+            this._delayTimer = null;
+
+            // 对每一帧的回调函数数组
+            this._eachFrameCallbacks = [];
 		},
         /**
 		 * 设置延迟时间，但是必须在start函数调用之前。
@@ -91,6 +102,9 @@
          * @returns {obj}
          */
 		pause : function() {
+			if( !this._isAnimating() ) {
+				return this;
+			}
 			// 保存下动画已经执行的时间
 			this._elapsedTime = Date.now() - this._startTime;
 			this._startTime = null;
@@ -105,6 +119,9 @@
          * @returns {obj}
          */
 		play : function() {
+			if( !this._elapsedTime ) {
+				return this;
+			}
 			// 开始播放动画，将_startTime设置为当前时间 - this._elapsedTime的时间
 			this._startTime = Date.now() - this._elapsedTime;
 			
@@ -126,34 +143,56 @@
 				return this;
 			}
 
-            // 缓存下this             
-            var self = this;
+			// 缓存下this             
+            var self = this,
+            	keys = Object.keys(this._props);
+
+            // 首次执行start函数的时候计算初始值
+            // 还有为每一个变化的属性生成插值器
+			if ( !this._props[keys[0]].interpolator ) {
+				// 获取DOM元素的初始值
+				this._calcInitState();
+
+				// 对每一个_props的值进行插值计算
+				this._generateInterpolator();
+			}
 			
 			// 执行delay毫秒之后再执行动画这个逻辑
 			if( this._delay > 0 ) {
-				window.setTimeout(function() {
+				self._delayTimer = window.setTimeout(function() {
 					self.start();
 					// 设置delay的值为0，下次调用start的时候就不会执行这里了
 					self._delay = 0;
 				}, self._delay);
 
-				// 别执行下面的代码了
 				return this;
 			}
 
 			// 记录初始时间
 			this._startTime = Date.now();
 
-			// 获取DOM元素的初始值（一定是跟数值有关）
-			this._calcInitState();
-
-			// 对每一个_props的值进行插值计算
-			this._generateInterpolator();
-
-			// console.log(this._startStateProps, this._props);
-
 			// 开启定时器
 			this._timer = requestAnimationFrame(this._animationStart.bind(this));
+
+			return this;
+		},
+
+		/**
+		 * 每一帧执行完成之后回调
+		 * @param func 需要进行回调的函数或者函数数组
+		 */
+		eachFrame : function(func) {
+			var len;
+			if ( isArray(func) ) {
+				len = func.length-1;
+				for( ; len >= 0; len--) {
+					typeof func[len] === 'function' && 
+					this._eachFrameCallbacks.push(func[len]);
+				}
+			}
+			else if( typeof func === 'function' ) {
+				this._eachFrameCallbacks.push(func);
+			}
 
 			return this;
 		},
@@ -163,10 +202,16 @@
          * @returns {obj}
          */
 		stop : function() {
+			// 如果当前还处于延迟的状态中，关闭它
+			this._delayTimer && window.clearTimeout(this._delayTimer);
+			this._delayTimer = null;
+
 			this._startTime = null;
 
 			// 设置中间状态为1的时候的状态，就是最终状态了。
-			this._setMiddleState(1);
+			this._isDOMElement && this._setMiddleState(1);
+			// 执行一下最后帧的时候的回调
+			this._executeEachFrameCallbacks(1);
 
 			cancelAnimationFrame(this._timer);
 
@@ -223,19 +268,31 @@
 		_calcInitState : function() {
 			var keys = Object.keys(this._props),
 				i = keys.length - 1,
-				value;
+				value,
+				endValue,
+				self = this;
 
 			for (; i>=0; i--) {
-				// 获取计算属性值
-				value = computedStyle(this._element, keys[i]);
+				if( this._isDOMElement ) {
+					// 获取计算属性值
+					value = computedStyle(this._element, keys[i]);
+					endValue = this._props[keys[i]];
+				}else {
+					// 如果不是DOM的话，需要提供start和end属性。
+					value = this._props[keys[i]].start;
+					endValue = this._props[keys[i]].end;
+				}
+				
 				// 如果value是有关颜色的字符串的时候，有可能是rgb(...)或者rgba(...)
 				// 也有可能是#ffasd十六进制的字符串，这样最好，不用转换了。
                 value = RGBToHex(value);
 
 
-				// 将初始值和最终的值转化成可以进行插值的数值，顺便保留单位之类的信息
+				// 将初始值和最终的值转化成可以进行插值的数值
+				// 顺便保留单位之类的信息
 				this._startStateProps[keys[i]] = {
-					// 如果value不可以转化成数值的形式，那么就使用原来的值，可能是颜色值。
+					// 如果value不可以转化成数值的形式
+					// 那么就使用原来的值，可能是颜色值。
 					value : Number.isNaN(window.parseFloat(value)) ? value : window.parseFloat(value),
 
 					// 单位
@@ -248,8 +305,22 @@
 				};
 
 				this._props[keys[i]] = {
-					value : isNaN(window.parseFloat(this._props[keys[i]])) ?
-                        	this._props[keys[i]] : window.parseFloat(this._props[keys[i]]),
+                    value : (function(key, end){
+                    	var endValue;
+
+                    	if( self._isDOMElement ) {
+                    		endValue = self._props[key];
+                    	}else {
+                    		endValue = end;
+                    	}
+                    	return Number.isNaN(
+                    			window.parseFloat(endValue)
+                    		) ?
+	                    		endValue : 
+	                    		window.parseFloat(endValue);
+
+                    }(keys[i], endValue)),
+
                     unit : this._startStateProps[keys[i]].unit
 				}
 			}
@@ -291,14 +362,19 @@
 				return;
 			}
 
-			this._setMiddleState(ratio);
+			this._isDOMElement && this._setMiddleState(ratio);
+
+			// 完成DOM设置之后执行每一帧之后的回调函数，
+			//参数是每一个值的当前插值
+			this._executeEachFrameCallbacks(ratio);
 
 			this._timer = requestAnimationFrame(this._animationStart.bind(this));
 		},
 
         /**
 		 * 设置动画中某一帧的状态
-         * @param ratio [0, 1]之间的一个值，计算方式为(Date.now() - this._startTime) / this._duration
+         * @param ratio [0, 1]之间的一个值，
+         * 计算方式为(Date.now() - this._startTime) / this._duration
          * @private
          */
 		_setMiddleState : function(ratio) {
@@ -315,6 +391,30 @@
 
 			// 为元素更改属性
 			style(this._element, cssText);
+		},
+
+		/**
+		 * 执行每一帧的回调函数
+		 * @param ratio [0, 1]之间的一个值，
+         * 计算方式为(Date.now() - this._startTime) / this._duration
+		 */
+		_executeEachFrameCallbacks : function(ratio) {
+			// 先计算当前需要进行动画的属性插值
+			var obj = {},
+				keys = Object.keys(this._props),
+				i = keys.length - 1;
+
+			for( ; i >= 0; i-- ) {
+				obj[keys[i]] = this._props[keys[i]].unit ? 
+					this._props[keys[i]].interpolator.getValue(ratio) + 
+					this._props[keys[i]].unit :
+					this._props[keys[i]].interpolator.getValue(ratio);
+			}		
+
+			i = this._eachFrameCallbacks.length - 1;
+			for( ; i >= 0; i-- ) {
+				this._eachFrameCallbacks[i](obj);
+			}
 		}
 	}
 
@@ -333,6 +433,10 @@
             this._props = props || this._props;
             this._duration = duration || this._duration;
             this._ease = mode || 'linear';
+
+            // 判断传递进来的是否是DOM元素
+            this._isDOMElement = !!this._element;
+
             return this;
 		}else {
 			return new Animate(element, props, duration, mode);
@@ -394,7 +498,7 @@
 	function RGBToHex(str) {
 		var temp = str + "";
 		// 不是颜色值的情况
-		if ( !/#|rgb/ig.test(temp) ) {
+		if ( !/rgb/ig.test(temp) ) {
 			return str;
 		}
 
@@ -406,6 +510,10 @@
 		return "#" + matches.split(',').map(function(item) {
 			return parseInt(item, 10).toString(16);
 		}).join("");
+	}
+
+	function isArray(arr) {
+		return /array\]$/i.test(Object.prototype.toString.call(arr));
 	}
 
 } (this || window));

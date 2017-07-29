@@ -34,7 +34,7 @@
             oButton = document.querySelector('button');
         var handle = animate(oDiv, {
 				"left" : "400px",
-				"top" : "400px",
+				"top" : "100px",
 				"opacity" : 0.7,
 				"background-color" : "#ff33ff"
 			})
@@ -43,15 +43,21 @@
 			.delay(1000)
             .start()
             .complete(function() {
-                console.log(90);
+                // console.log(90);
+            })
+            .eachFrame(function(obj) {
+            	console.log(obj);
             });
 
-		console.log(handle);
+		// console.log(handle);
 
-		handle.stop();
+		setTimeout(function() {
+			handle.stop();
+		}, 2000);
 
         var isPause = false;
         oButton.onclick = function() {
+        	handle.stop();
             if( !isPause ) {
                 // 动画正在进行，那就停止
                 handle.pause();
@@ -61,6 +67,26 @@
             }
             isPause = !isPause;
         }
+
+        var handle1 = animate(null, {
+        	height : {
+        		start : "0px",
+        		end : "400px"
+        	},
+        	width : {
+        		start : 400,
+        		end : 3
+        	},
+        	color : {
+        		start : "#ad34ff",
+        		end : "#ffff"
+        	}
+        })
+        .duration(3000)
+        .eachFrame([
+        	// function a(obj) {console.log(obj);}
+        ])
+        .start();
 	}
 //	console.log(interpolate().domain([1, 45]).range([33, 65]).getValue(12))
 </script>
