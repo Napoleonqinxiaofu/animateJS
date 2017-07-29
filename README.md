@@ -37,10 +37,10 @@ var animateHandle = animate(
 		},
 
 		// duration 可选，默认为1000ms，也可以一会儿再调用duration函数进行设置
-
+		3000,
 		// easeMode 可选，默认为linear，缓动的方式，
-		//linear、quad、cubic、bounceOut……，
-		// 请查看interpolate.js里面的effects对象
+		//linear、quad、cubic、bounceOut……
+		"bounceOut"
 	);
 
 	// 执行动画
@@ -59,7 +59,7 @@ var animateHandle = animate(oDiv, props)
 		.start();
 ```
 
-设置缓动方式
+设置缓动方式，缓动的方式有：linear、easeInQuad、easeOutQuad、easeInOutQuad、easeInCubic、easeOutCubic、easeInOutCubic、easeInQuart、easeOutQuart、easeInOutQuart、easeInQuint、easeOutQuint、easeInOutQuint、easeInSine、easeOutSine、easeInOutSine、easeInExpo、easeOutExpo、easeInOutExpo、easeInCirc、easeOutCirc、easeInOutCirc、easeInElastic、easeOutElastic、easeInOutElastic、easeInBack、easeOutBack、easeInOutBack、easeInBounce、easeOutBounce、easeInOutBounce。
 
 ```Javascript
 // 类似于duration，可以在animate函数中设置缓动方式（easeMode）
@@ -108,10 +108,91 @@ var animateHandle = animate(oDiv, props)
 ```
 
 中断动画，直接跳到最终的动画状态
+
 ```Javascript
 // 中断动画之后会直接跳转到动画的最终状态
-setTimeout(function() {
-	animateHandle.stop();
-}, 2000);
+animateHandle.stop();
+```
+
+暂停动画，不过这得等到delay的延迟时间过去了才能调用
+
+```Javascript
+animationHandle.pause();
+```
+
+继续动画，只有在暂停动画之后调用才有效
+
+```Javascript
+animationHandle.play();
+```
+
+设置每一帧动画结束的回调函数，每一帧动画结束之后会调用这些函数，参数是当前帧的数值。
+
+```Javascript
+// 可以传递一个函数，也可以传递一个包含多个函数的数组
+animateHandle.eachFrame(function(currentParam) {
+	console.log(currentParam);
+});
+
+// 传递数组
+animateHandle.eachFrame([
+	function a(obj) {console.log(obj);},
+	function b(obj) {console.log("Another function will be called after each step of animation.");}
+]);
 
 ```
+
+### 我不想使用DOM来运动怎么办？
+
+假设你不想在页面中使用DOM来进行运动，而只是想模拟一个动画的效果，并获取每一帧动画的值，那也是可以的，在调用animate函数的时候，设置第一个参数不是DOM节点即可，可以传递字符串、数组、数值……，甚至是null、undefined，但是由于不再是DOM节点，程序无法预料初始值和最终的目标值，这些都需要我们手动设置，如下：
+
+```Javascript
+var handle = animate(null,
+		{
+			paramOne : {
+				start : "400px",
+				end : "9px",
+			},
+			paramTwo : {
+				start : 90,
+				end :-9
+			},
+			paramThree : {
+				// 颜色值必须是以#开头的十六进制字符串，不足6位则补零
+				start : "#ff00",
+				end : "#45ff44"
+			}
+
+		}
+	)
+	.duration(2000)
+	.ease('cubic')
+	.start();
+```
+
+没有DOM元素的时候我们需要手动每一个需要缓动的属性的start和end。怎么获取每一帧的时候的插值？使用eachFrame函数，其余的都与有DOM的时候一致。
+
+### 插值器——interpolate.js
+
+插值是什么意思？就是一种预测的方式，如同在二维空间中给我们两个非重复点的坐标，我们得到一条直线，这样就可以这条直线上的其他的点的值了，这就是简单的插值。同样对于DOM动画来说，我们需要知道动画的初始值和结束值，这样我们就可以对这两个值之间的值进行预测。animateJS的插值依赖于interpolate.js，所以你也可以单独使用interpolate.js来作为你的插值器，下面我们对此进行介绍。
+
+interpolate.js提供全局函数interpolate，能提供十六进制颜色值、数值的插值，并且对外提供三个API。首先我们来看一下数值的插值。
+
+```Javascript
+// interpolate函数可以传递一个参数，作为缓动的方式，
+// 缓动的种类与上述的easeMode一致。
+var handle = interpolate("bounceOut")
+			// 设置起始值
+			.domain(400)
+			// 设置最终值
+			.range(-100);
+
+// 现在我们可以使用getValue来获取400到-100之间的任意值，
+// 传递一个0到1之间的数值进去即可取到
+var step = handle.getValue(0.5); // 获取中间的值
+console.log(step);
+```
+
+有人会问，我怎么知道我要取多少，这就问对了，这就是动画的基础，动画的时候我们使从0到1逐渐取值，如果你说我就要取200这个数值，这样的话我们为什么需要插值呢？直接设置200不就可以了是不？如果你取0则会得到起始点，取1会得到最终值。
+
+interpolate.js 同样可以对十六进制的颜色进行插值，你可以在调用domain和range函数的时候传递进去一个十六进制的颜色值。

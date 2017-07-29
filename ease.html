@@ -23,7 +23,8 @@
 
 	<br>
 
-	<button style="position:absolute;left:200px;">TOGGLE</button>
+	<button style="position:absolute;left:200px;">pause</button>
+	<p></p>
 </body>
 <script src="interpolate.js"></script>
 <script src="animate.js"></script>
@@ -31,37 +32,66 @@
 
 	window.onload = function() {
         var oDiv = document.querySelector('div'),
+        	oP = document.querySelector('p'),
             oButton = document.querySelector('button');
         var handle = animate(oDiv, {
 				"left" : "400px",
-				"top" : "400px",
+				"top" : "100px",
 				"opacity" : 0.7,
 				"background-color" : "#ff33ff"
 			})
             .ease('bounceOut')
             .duration(3000)
-			.delay(1000)
             .start()
             .complete(function() {
-                console.log(90);
+                console.log("DOM animation is done.");
             });
 
-		console.log(handle);
-
-		handle.stop();
 
         var isPause = false;
         oButton.onclick = function() {
             if( !isPause ) {
                 // 动画正在进行，那就停止
                 handle.pause();
+                oButton.innerHTML = "play";
             }else {
                 // 动画已经暂停，继续执行动画
                 handle.play();
+                oButton.innerHTML = "pause";
             }
             isPause = !isPause;
         }
+
+        var handle1 = animate(null, {
+        	paramOne : {
+				start : "400px",
+				end : "9px",
+			},
+			paramTwo : {
+				start : 90,
+				end :-9
+			},
+			paramThree : {
+				// 颜色值必须是以#开头的十六进制字符串，不足6位则补零
+				start : "#ff00",
+				end : "#45ff44"
+			}
+        })
+        .duration(3000)
+        .eachFrame(function show(obj) {
+        	obj.toString = function() {
+        		var str = "";
+        		for( var key in this ) {
+        			if( typeof this[key] !== 'function') {
+        				str += key + "==" + this[key] + "<br\/>";
+        			}
+        		}
+        		return str;
+        	}
+        	console.log(obj.toString());
+        	oP.innerHTML = obj.toString();
+        })
+        .start();
 	}
-//	console.log(interpolate().domain([1, 45]).range([33, 65]).getValue(12))
 </script>
 </html>
