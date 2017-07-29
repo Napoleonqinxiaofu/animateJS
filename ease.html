@@ -43,8 +43,8 @@
             .ease('bounceOut')
             .duration(3000)
             .start()
-            .complete(function() {
-                console.log("DOM animation is done.");
+            .eachFrame(function(obj) {
+            	//console.log(obj);
             });
 
 
