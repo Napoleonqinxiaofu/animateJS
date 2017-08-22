@@ -1,5 +1,8 @@
 {
 	"name": "Scale and animation frame",
 	"version": "1.0.1",
-	"description": "This repo contain animation interpolate and scale function, which imitate the d3.js"
+	"description": "This repo contain animation interpolate and scale function, which imitate the d3.js",
+	"devDependencies": {
+		"requirejs": "^2.3.5"
+	}
 }

@@ -1,3 +1,6 @@
 *.txt
 .idea/
 .idea
+node_modules
+*.json
+.idea/*.xml
