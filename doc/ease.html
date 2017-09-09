@@ -25,6 +25,11 @@
             margin-top: 5px;
             width:0;
         }
+        button{
+            padding: 4px;
+            font-family: "Microsoft YaHei UI";
+            font-size:18px;
+        }
     </style>
     <script src="../../node_modules/requirejs/require.js"></script>
 </head>
@@ -32,7 +37,7 @@
 
 <!-- 对于css属性动画来说，首先确定运行动画之前的属性值，再确定运行动画之后的属性值，然后确定运动时间周期。
 最后使用插值的方式来告诉浏览器每一帧渲染的时候执行什么函数即可。 -->
-
+<button>暂停</button>
 <ul id="container">
 
 </ul>
@@ -43,36 +48,30 @@
 
 <script>
     requirejs.config({
-        baseUrl: "../src"
+        baseUrl: "../../src/"
     });
 
-    require(['animate', 'ease', 'util'], function (animate, easeEffects, util) {
+    require(["Animate/animate", "Animate/ease"], function(Animate, easeEffects) {
         var oUl = document.querySelector("#container"),
             easeKeys = Object.keys(easeEffects),
             len = easeKeys.length,
             i = len-1,
             insertElementString = "",
             aLis = null,
-            colors = (function(){
-                var temp = [
-                    [254, 67, 101],
-                    [252, 157, 154],
-                    [249,205, 173],
-                    [200, 200, 169],
-                    [131, 175, 155]
+            colors = [
+                    "rgb(254, 67, 101)",
+                    "rgb(252, 157, 154)",
+                    "rgb(249,205, 173)",
+                    "rgb(200, 200, 169)",
+                    "rgb(131, 175, 155)"
                 ];
-
-                return temp.map(function( RGB ) {
-                    return util.RGBToString(RGB);
-                });
-            }());
 
 
         // 创建与easeKeys一样多的li元素
         for( ; i >= 0; i-- ) {
-            insertElementString += "<li style=\"background:" +
-                colors[i % colors.length] +
-                ";\">" +
+            insertElementString += "<li style=\"background:"
+                + colors[i % colors.length]
+                + ";\">" +
                 "当前缓动的方式为：" + easeKeys[i] +
                 "</li>";
         }
@@ -80,22 +79,47 @@
 
         aLis = document.querySelectorAll("#container>li");
 
+        var handles = [];
+
         // 每一个li元素执行一种动画效果，最终将其width设置为500px
         aLis.forEach(function(li, index) {
 
             (function(li, index){
 
-                animate(li, {
+                var a = Animate(li, {
                     width: "700px"
                 })
-                    .ease(easeKeys[index])
-                    .duration(4000)
-                    .start();
+                .ease(easeKeys[index])
+                .duration(4000)
+                .delay(500)
+                .start();
+
+                handles.push(a);
+
             }(li, index));
 
         });
 
+        var oButton = document.querySelector("button");
+
+        oButton.addEventListener('click', toggle, false);
+
+        var isPuase = false;
+        var words = {
+            "false": "暂停",
+            "true": "继续"
+        };
+
+        function toggle() {
+            isPuase = !isPuase;
+            this.innerHTML = words[isPuase];
+
+            handles.forEach(function(h) {
+               isPuase ? h.pause() : h.play();
+            });
+        }
 
     });
+
 </script>
 </html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../node_modules/requirejs/require.js"></script>
+</head>
+<body>
+<div></div>
+</body>
+<script>
+    requirejs.config({
+        baseUrl: "../../src/",
+        paths: {
+//            d3Timer: "../node_modules/d3-timer/build/d3-timer",
+            //myTimer: "timer/Timer"
+        }
+    });
+
+    require(["Animate/calcAnimate"], function(calcAnimate) {
+        var div = document.querySelector("div");
+        var handle = calcAnimate({
+            color: {
+                start: "#000",
+                end: "#f2f2f2"
+            },
+            string: {
+                start: "50px 30em",
+                end: "100px 200em"
+            },
+            number: {
+                start: 10,
+                end: 100
+            }
+        })
+        .duration(2000)
+        .eachFrame(function(obj) {
+            div.innerHTML = "color:" + obj['color']
+                + "<br/>string:" + obj.string
+                + "<br/>number:" + obj.number;
+        })
+        .complete(function() {
+            console.log("终于他妈的写完了");
+        })
+        .start();
+    });
+</script>
+</html>

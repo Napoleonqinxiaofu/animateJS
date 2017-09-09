@@ -3,6 +3,7 @@
 	"version": "1.0.1",
 	"description": "This repo contain animation interpolate and scale function, which imitate the d3.js",
 	"devDependencies": {
+		"d3-scale": "^1.0.6",
 		"requirejs": "^2.3.5"
 	}
 }
