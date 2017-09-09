@@ -7,8 +7,8 @@ define(function (require) {
 
     var interpolate = require("../interpolate/interpolate");
     var timer = require("../timer/d3-timer");
-    var ease = require("./ease");
-    var util = require("./util");
+    var ease = require("../common/ease");
+    var util = require("../common/util");
 
     function Animate(props, duration, delay, mode) {
         if( this instanceof Animate ) {

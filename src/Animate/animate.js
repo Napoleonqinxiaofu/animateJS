@@ -4,7 +4,7 @@
 define(function(require) {
 
     var animateFrame = require("./calcAnimate");
-    var util = require("./util");
+    var util = require("../common/util");
 
     var slice = [].slice;
 

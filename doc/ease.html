@@ -51,7 +51,7 @@
         baseUrl: "../../src/"
     });
 
-    require(["Animate/animate", "Animate/ease"], function(Animate, easeEffects) {
+    require(["Animate/animate", "common/ease"], function(Animate, easeEffects) {
         var oUl = document.querySelector("#container"),
             easeKeys = Object.keys(easeEffects),
             len = easeKeys.length,
