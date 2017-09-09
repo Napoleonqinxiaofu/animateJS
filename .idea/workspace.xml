@@ -1,18 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f6a78e93-0927-4169-bfc6-59855665a0e3" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/Animate/interpolate.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/timer/Timer.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/timer/anotherTimer.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/timer/oldVersionTimer.js" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/ease.html" afterPath="$PROJECT_DIR$/doc/ease.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Animate/animate.js" afterPath="$PROJECT_DIR$/src/Animate/animate.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Animate/calcAnimate.js" afterPath="$PROJECT_DIR$/src/Animate/calcAnimate.js" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Animate/ease.js" afterPath="$PROJECT_DIR$/src/common/ease.js" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/Animate/util.js" afterPath="$PROJECT_DIR$/src/common/util.js" />
-    </list>
+    <list default="true" id="f6a78e93-0927-4169-bfc6-59855665a0e3" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -133,6 +122,11 @@
               <item name="animateJS" type="b2602c69:ProjectViewProjectNode" />
               <item name="animateJS" type="462c0819:PsiDirectoryNode" />
               <item name="doc" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="animateJS" type="b2602c69:ProjectViewProjectNode" />
+              <item name="animateJS" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -280,12 +274,12 @@
       <workItem from="1504169674932" duration="17000" />
       <workItem from="1504926654483" duration="38000" />
       <workItem from="1504939994069" duration="97000" />
-      <workItem from="1504953177690" duration="293000" />
+      <workItem from="1504953177690" duration="493000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="24101000" />
+    <option name="totallyTimeSpent" value="24301000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1048" extended-state="0" />
@@ -555,14 +549,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="5" column="11" lean-forward="true" selection-start-line="5" selection-start-column="11" selection-end-line="5" selection-end-column="11" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/doc/anotherAnimate.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-405">
@@ -593,6 +579,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="297">
           <caret line="11" column="0" lean-forward="true" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="5" column="11" lean-forward="true" selection-start-line="5" selection-start-column="11" selection-end-line="5" selection-end-column="11" />
           <folding />
         </state>
       </provider>
